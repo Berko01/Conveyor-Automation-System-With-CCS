@@ -1,0 +1,166 @@
+CCS PCM C Compiler, Version 5.007, 61971               09-Tem-23 13:38
+
+               Filename:   C:\Users\berki\Desktop\Mikro Projeler\Conveyor Automation\main.lst
+
+               ROM used:   103 words (1%)
+                           Largest free fragment is 2048
+               RAM used:   7 (2%) at main() level
+                           7 (2%) worst case
+               Stack used: 0 locations
+               Stack size: 8
+
+*
+0000:  MOVLW  00
+0001:  MOVWF  0A
+0002:  GOTO   019
+0003:  NOP
+.................... #include <main.h> 
+.................... #include <16F877A.h> 
+.................... //////// Standard Header file for the PIC16F877A device //////////////// 
+.................... #device PIC16F877A 
+....................  
+.................... #list 
+....................  
+.................... #device ADC=16 
+....................  
+.................... #FUSES NOWDT                 	//No Watch Dog Timer 
+.................... #FUSES NOBROWNOUT            	//No brownout reset 
+.................... #FUSES NOLVP                 	//No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O 
+....................  
+.................... #use delay(crystal=4MHz) 
+0004:  MOVLW  21
+0005:  MOVWF  04
+0006:  BCF    03.7
+0007:  MOVF   00,W
+0008:  BTFSC  03.2
+0009:  GOTO   018
+000A:  MOVLW  01
+000B:  MOVWF  78
+000C:  CLRF   77
+000D:  DECFSZ 77,F
+000E:  GOTO   00D
+000F:  DECFSZ 78,F
+0010:  GOTO   00C
+0011:  MOVLW  4A
+0012:  MOVWF  77
+0013:  DECFSZ 77,F
+0014:  GOTO   013
+0015:  GOTO   016
+0016:  DECFSZ 00,F
+0017:  GOTO   00A
+0018:  RETURN
+.................... #use STANDARD_IO( A ) 
+.................... #use FIXED_IO( B_outputs=PIN_B7,PIN_B6,PIN_B5,PIN_B4,PIN_B3,PIN_B2,PIN_B1,PIN_B0 ) 
+....................  
+....................  
+.................... int counter = 0; 
+.................... void main() 
+0019:  CLRF   20
+001A:  BSF    03.5
+001B:  BSF    1F.0
+001C:  BSF    1F.1
+001D:  BSF    1F.2
+001E:  BCF    1F.3
+001F:  MOVLW  07
+0020:  MOVWF  1C
+0021:  BCF    03.7
+0022:  MOVLW  1F
+0023:  ANDWF  03,F
+.................... { 
+....................    set_tris_b(0x00); 
+0024:  MOVLW  00
+0025:  MOVWF  06
+....................    set_tris_a(0xff); 
+0026:  MOVLW  FF
+0027:  MOVWF  05
+....................    output_b(0x00); 
+0028:  CLRF   06
+0029:  BCF    03.5
+002A:  CLRF   06
+....................     
+....................    while(input(pin_A2) == 0); //Start. 
+002B:  BSF    03.5
+002C:  BSF    05.2
+002D:  BCF    03.5
+002E:  BTFSS  05.2
+002F:  GOTO   02B
+....................     
+....................    output_b(0b00000101); //M1==>ON 
+0030:  BSF    03.5
+0031:  CLRF   06
+0032:  MOVLW  05
+0033:  BCF    03.5
+0034:  MOVWF  06
+....................     
+....................    while(TRUE) 
+....................    { 
+....................       while(input(pin_A0) == 0);//Did the sensor detect? 
+0035:  BSF    03.5
+0036:  BSF    05.0
+0037:  BCF    03.5
+0038:  BTFSS  05.0
+0039:  GOTO   035
+....................       delay_ms(70); 
+003A:  MOVLW  46
+003B:  MOVWF  21
+003C:  CALL   004
+....................       while(input(pin_A0) == 1); //Has the product passed? 
+003D:  BSF    03.5
+003E:  BSF    05.0
+003F:  BCF    03.5
+0040:  BTFSC  05.0
+0041:  GOTO   03D
+....................       delay_ms(70); 
+0042:  MOVLW  46
+0043:  MOVWF  21
+0044:  CALL   004
+....................       counter++; 
+0045:  INCF   20,F
+....................       if(counter != 10) 
+0046:  MOVF   20,W
+0047:  SUBLW  0A
+0048:  BTFSS  03.2
+....................       continue; 
+0049:  GOTO   035
+....................       output_b(0b00011000); 
+004A:  BSF    03.5
+004B:  CLRF   06
+004C:  MOVLW  18
+004D:  BCF    03.5
+004E:  MOVWF  06
+....................       while(input(pin_A1) == 0);//Did the sensor detect? 
+004F:  BSF    03.5
+0050:  BSF    05.1
+0051:  BCF    03.5
+0052:  BTFSS  05.1
+0053:  GOTO   04F
+....................       delay_ms(70); 
+0054:  MOVLW  46
+0055:  MOVWF  21
+0056:  CALL   004
+....................       while(input(pin_A1) == 1); //Has the product passed? 
+0057:  BSF    03.5
+0058:  BSF    05.1
+0059:  BCF    03.5
+005A:  BTFSC  05.1
+005B:  GOTO   057
+....................       delay_ms(70); 
+005C:  MOVLW  46
+005D:  MOVWF  21
+005E:  CALL   004
+....................       output_b(0b00000101); //M1==>ON 
+005F:  BSF    03.5
+0060:  CLRF   06
+0061:  MOVLW  05
+0062:  BCF    03.5
+0063:  MOVWF  06
+....................       counter = 0; 
+0064:  CLRF   20
+0065:  GOTO   035
+....................    } 
+....................  
+.................... } 
+0066:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F31   XT NOWDT PUT NOBROWNOUT NOLVP NOCPD NOWRT NODEBUG NOPROTECT
